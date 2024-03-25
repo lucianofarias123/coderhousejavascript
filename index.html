@@ -18,7 +18,16 @@
         <img src="./img/logo-clinica.webp" alt="Imagen del banner">
         <h1>Centro de Turnos</h1>
     </div>
-    <button class="button" id="sacar-turno-btn">Sacar Turno</button>
+
+    <form id="turno-form">
+        <label for="dia">Día de la semana:</label>
+        <input type="text" id="dia" name="dia" placeholder="Ingrese el día (lunes, martes, miércoles, jueves, viernes)" required><br><br>
+        
+        <label for="horario">Horario:</label>
+        <input type="text" id="horario" name="horario" placeholder="Ingrese el horario (formato: 7:00, 8:00, ..., 16:00)" required><br><br>
+        
+        <button type="submit">Sacar Turno</button>
+    </form>
 
     <div class="turnoslista" id="turnos-lista"></div>
 

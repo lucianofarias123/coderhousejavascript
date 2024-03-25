@@ -1,46 +1,51 @@
-const diasSemana = ['lunes', 'martes', 'miercoles', 'jueves', 'viernes'];
+
+const diasSemana = ['lunes', 'martes', 'miércoles', 'jueves', 'viernes'];
 const turnos = ["7:00", "8:00", "9:00", "10:00", "11:00", "12:00", "13:00", "14:00", "15:00", "16:00"];
 
-document.getElementById('sacar-turno-btn').addEventListener('click', sacarTurno);
-mostrarTurnos();
+document.getElementById('turno-form').addEventListener('submit', function (event) {
+    event.preventDefault();
 
-function sacarTurno() {
-    let diaIngresado = prompt("Ingrese día de la semana deseado para su turno").toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+    let diaIngresado = document.getElementById('dia').value.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+    let horarioIngresado = document.getElementById('horario').value.trim();
+
     if (!diasSemana.includes(diaIngresado)) {
         Swal.fire("Por favor, ingrese un día válido");
         return;
     }
 
-    let horarioIngresado = prompt("Ingrese el horario deseado, entre las 7:00hs y 16:00hs");
     if (!turnos.includes(horarioIngresado)) {
         Swal.fire("Por favor, ingrese un horario válido, entre las 7:00hs y 16:00hs");
         return;
     }
-
 
     let turno = {
         dia: diaIngresado,
         horario: horarioIngresado
     };
 
-
-    let turnosRegistrados = JSON.parse(localStorage.getItem('turnos')) || [];
-
-    turnosRegistrados.push(turno);
-    localStorage.setItem('turnos', JSON.stringify(turnosRegistrados));
-    Swal.fire("Turno registrado correctamente");
-    mostrarTurnos();
-}
+    fetch('https://jsonplaceholder.typicode.com/posts', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(turno)
+    })
+        .then(response => {
+            if (!response.ok) {
+                throw new Error('Error al registrar el turno');
+            }
+            return response.json();
+        })
+        .then(data => {
+            Swal.fire("Turno registrado correctamente");
+            mostrarTurnos();
+            document.getElementById('turno-form').reset();
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            Swal.fire("Ocurrió un error al registrar el turno");
+        });
+});
 
 function mostrarTurnos() {
-    let turnosRegistrados = JSON.parse(localStorage.getItem('turnos')) || [];
-    let turnosHTML = "<h2>Turnos Registrados:</h2>";
-    if (turnosRegistrados.length === 0) {
-        turnosHTML += "<p>No hay turnos registrados.</p>";
-    } else {
-        turnosRegistrados.forEach(turno => {
-            turnosHTML += `<p>Día: ${turno.dia}, Horario: ${turno.horario}</p>`;
-        });
-    }
-    document.getElementById('turnos-lista').innerHTML = turnosHTML;
 }
